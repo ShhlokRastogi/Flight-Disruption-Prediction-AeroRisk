@@ -222,11 +222,47 @@ Each model predicts **P(class vs rest)** using Extra Trees Classifier
 
 ---
 
-### 📊 OvR Model Performance
+**OvR Accuracy Summary**
 
-**Diverted vs Rest:** ROC-AUC ≈ 1.00
-**Cancelled vs Rest:** ROC-AUC ≈ 0.92
-**Delayed / On-Time vs Rest:** ROC-AUC ≈ 0.77
+* **Diverted vs Rest**
+
+  * Train Accuracy: 99%
+  * Test Accuracy: 99%
+  * ROC-AUC Test  : 0.99
+  * Precision     : 0.99
+  * Recall        : 0.99
+  * F1-Score      : 0.99
+
+* **Cancelled vs Rest**
+
+  * Train Accuracy: 99%
+  * Test Accuracy: 90%
+  * ROC-AUC Test  : 0.91
+  * Precision     : 0.93
+  * Recall        : 0.63
+  * F1-Score      : 0.75
+
+* **Delayed vs Rest**
+
+  * Train Accuracy: 93%
+  * Test Accuracy: 71%
+  * ROC-AUC Test  : 0.76
+  * Precision     : 0.44
+  * Recall        : 0.63
+  * F1-Score      : 0.52
+
+* **On-Time vs Rest**
+
+  * Train Accuracy: 93%
+  * Test Accuracy: 71%
+  * ROC-AUC Test  : 0.76
+  * Precision     : 0.44
+  * Recall        : 0.60
+  * F1 score : 0.51
+<img width="627" height="470" alt="image" src="https://github.com/user-attachments/assets/4cad6627-c155-4a08-a6c4-a5deeaa9a9ad" />
+<img width="627" height="470" alt="image" src="https://github.com/user-attachments/assets/54631ec9-1881-498e-9f00-4f4a5fcf55b5" />
+<img width="629" height="470" alt="image" src="https://github.com/user-attachments/assets/39e727c2-3740-4275-8d1c-f9b6acb07e22" />
+<img width="637" height="470" alt="image" src="https://github.com/user-attachments/assets/af5fd40c-d509-496a-b12c-36b730025039" />
 
 ---
 
@@ -299,11 +335,103 @@ Designed for **low-memory environments**:
 
 ---
 
-## ✅ Final Takeaways
 
-✔ Reflects real-world disruption hierarchy
-✔ Strong rare-event detection
-✔ Transparent decision flow
-✔ Robust & extensible system
+## 🌟 Distinguishing Features
+
+AeroRisk is not a typical *train-a-model-and-predict* project. It reflects **real-world ML system design**, shaped by constraints, failures, and operational needs.
+
+---
+
+### 🧠 System-First Design
+
+* Built as a **complete ML system**, not a standalone model
+* Clear separation of feature engineering, modeling, inference, calibration, and risk scoring
+* Mirrors how production ML systems are actually deployed
+
+---
+
+### 🧩 Structured Problem Decomposition
+
+* Replaces flat multiclass prediction with **hierarchical binary decisions**
+* Uses One-vs-Rest and staged pipelines to handle heterogeneous disruption types
+* Reduces class confusion and improves rare-event handling
+
+---
+
+### 🎯 Specialized, Interpretable Models
+
+* Each binary model solves **one clear operational question**
+* Avoids forcing a single model to learn contradictory patterns
+* Improves interpretability and debugging
+
+---
+
+### 🔄 Probability-Aware Decision Making
+
+* Explicit **probability coupling (softmax)** for OvR models
+* Probabilistically correct multiclass inference
+* Enables valid ROC-AUC and confidence-based decisions
+
+---
+
+### ⚠️ Risk Scoring Over Hard Labels
+
+* Outputs a **continuous disruption risk score**, not just a class
+* Supports ranking, prioritization, and threshold-free decisions
+* Better aligned with real operational workflows
+
+---
+
+### 🧹 Deployment-Conscious Feature Engineering
+
+* No leakage-prone or post-event features
+* High-cardinality categories handled via **Bayesian reliability encodings**
+* All features available **before flight departure**
+
+---
+
+### 💾 Memory-Safe by Design
+
+* Models loaded sequentially and released immediately
+* Designed for low-memory environments (e.g., Streamlit Cloud)
+* A production constraint often ignored in academic projects
+
+---
+
+### 🔬 Failure-Driven Iteration
+
+* Architecture evolved from **documented failures**
+* Each design choice is empirically motivated
+* Demonstrates engineering maturity, not just performance
+
+---
+
+## ⚠️ Limitations & Trade-offs
+
+* **Accuracy Ceiling (~70–75%)**
+  Strong overlap between *On Time*, *Delayed*, and *Cancelled* limits separability. The model predicts **risk**, not certainty.
+
+* **Pre-Departure Signals Only**
+  No real-time weather, ATC, or aircraft rotation data, limiting last-minute disruption prediction.
+
+* **Independent OvR Modeling**
+  One-vs-Rest classifiers are trained independently and do not model transitions between disruption types.
+
+* **No Temporal Dependency Modeling**
+  Flights are treated independently; delay propagation and aircraft rotation chains are not captured.
+
+* **Reliance on Historical Reliability Encodings**
+  Carrier and airport reliability assume historical stability; sudden operational shifts may lag.
+
+* **Probability Calibration Assumptions**
+  Softmax coupling assumes comparable confidence scales across OvR models, introducing minor calibration risk.
+
+* **Memory-Heavy Ensembles**
+  Tree-based models require careful memory management, limiting low-resource cloud deployment.
+
+* **Manual Retraining Required**
+  No automated drift detection; periodic retraining is required as airline operations evolve.
+
+---
 
 **AeroRisk** prioritizes **correctness, interpretability, and deployability** — making it suitable for real-world airline operations.
