@@ -34,7 +34,7 @@ This project uses a large-scale historical **U.S. airline operations dataset** c
 
 - **Time span:** Multiple years of historical flight records  
 - **Scale:** Original dataset contains **~123 million rows**  
-- **Training subsets used:** 1M – 4M rows (for experimentation and scalability)  
+- **Training subsets used:** 1M rows 
 - **Final evaluation:** Balanced and stratified samples for fair comparison  
 
 Each row represents **one scheduled flight**.
@@ -258,5 +258,6 @@ For each flight, the system produces:
 ## 🏁 Final Verdict
 
 The **4-stage binary pipeline with hard labeling and a meta-classifier** emerged as the most **accurate, stable, and deployable** solution, outperforming all direct multiclass and naive ensemble approaches tried during the project.
+
 
 
