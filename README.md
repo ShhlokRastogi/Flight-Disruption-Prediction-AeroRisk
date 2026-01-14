@@ -1,263 +1,309 @@
-# ✈️ AeroRisk — Flight Disruption Prediction & Risk Scoring System
+# ✈️ **AeroRisk**
+
+### *Flight Disruption Prediction & Risk Scoring System*
 
 ---
 
 ## 🧠 Problem Statement
 
-Flight disruptions are **rare, asymmetric, highly imbalanced, and hierarchical** events.  
-A single multiclass classifier often fails to learn these heterogeneous patterns effectively, leading to unstable predictions and poor generalization.
+Flight disruptions are **rare, asymmetric, highly imbalanced, and hierarchical** events.
+A single flat multiclass classifier struggles to learn these heterogeneous patterns, often resulting in unstable predictions and poor generalization.
 
-This project predicts **flight disruption outcomes** using structured airline operational data.  
-The final system predicts one of four mutually exclusive outcomes:
+**AeroRisk** predicts **flight disruption outcomes** from structured airline operational data.
+Each flight is classified into **one of four mutually exclusive outcomes**:
 
-- **Diverted** — extremely rare but operationally critical  
-- **Cancelled** — often a consequence of extreme delays or systemic failures  
-- **Delayed** — common and strongly overlapping with On-Time cases  
-- **On Time** — default majority outcome  
+| Outcome         | Description                                      |
+| --------------- | ------------------------------------------------ |
+| ✈️ **Diverted** | Extremely rare but operationally critical        |
+| ❌ **Cancelled** | Often follows severe delays or systemic failures |
+| ⏱ **Delayed**   | Common, with strong overlap with On-Time         |
+| ✅ **On Time**   | Majority / default outcome                       |
 
-Through extensive experimentation, failure analysis, and iterative redesign, the project converged on two robust solutions:
+After extensive experimentation and failure analysis, the project converged on **two robust architectures**:
 
-- **A 4-stage binary classification pipeline with hard labeling + meta-classifier**
-- **A 4-stage binary pipeline with softmax + argmax aggregation**
+* 🔹 **4-stage binary pipeline with hard labeling + meta-classifier**
+* 🔹 **4-stage binary OvR ensemble with softmax + argmax aggregation**
 
-These approaches proved to be the most **robust, interpretable, and deployment-ready**.
-
----
-
-## 📊 Dataset Description
-
-This project uses a large-scale historical **U.S. airline operations dataset** containing detailed information about scheduled and actual flight performance. The data captures **temporal, operational, route-level, and carrier-level characteristics** that influence flight disruptions.
+These approaches are **interpretable, robust, and deployment-ready**.
 
 ---
+
+## 📊 Dataset Overview
+
+Large-scale historical **U.S. airline operations data**, capturing temporal, operational, route-level, and carrier-level signals influencing disruptions.
 
 ### 📁 Data Scope
 
-- **Time span:** Multiple years of historical flight records  
-- **Scale:** Original dataset contains **~123 million rows**  
-- **Training subsets used:** 1M rows 
-- **Final evaluation:** Balanced and stratified samples for fair comparison  
+* **Time span:** Multiple years
+* **Original scale:** ~123 million flights
+* **Training subset:** 1M rows
+* **Final evaluation:** Balanced & stratified samples each label has 0.25M rows
 
-Each row represents **one scheduled flight**.
+Each row corresponds to **one scheduled flight**.
+
+---
+
+## 🎯 Target Variable
+
+**`DisruptionType`** (highly imbalanced):
+
+* On Time
+* Delayed
+* Cancelled
+* Diverted
 
 ---
 
-### 🎯 Target Variable
-
-**`DisruptionType`**  
-A categorical label representing the final operational outcome of a flight:
-
-- **On Time** – Arrived without delay  
-- **Delayed** – Arrived late  
-- **Cancelled** – Flight did not operate  
-- **Diverted** – Flight landed at a different airport  
-
-This target is **highly imbalanced**, with *On Time* and *Delayed* flights dominating the dataset.
-
----
+## 🧬 Feature Engineering
 
 ### ⏱ Temporal Features
 
-- `Year`
-- `Month`
-- `DayofMonth`
-- `DayOfWeek`
-- `CRSDepMin` – Scheduled departure time (minutes from midnight)
-- `CRSArrMin` – Scheduled arrival time (minutes from midnight)
-- `ScheduledElapsedTime` – Planned flight duration (minutes)
+* Year, Month, DayofMonth, DayOfWeek
+* CRSDepMin, CRSArrMin
+* ScheduledElapsedTime
 
 ---
 
-### 🛫 Route & Carrier Features
+### 🛫 Route & Carrier (Encoded)
 
-- `Origin` – Origin airport (IATA code)
-- `Dest` – Destination airport (IATA code)
-- `UniqueCarrier` – Airline carrier code
-- `Distance` – Flight distance (miles)
+Raw high-cardinality identifiers are **not used directly**:
 
-Due to **high cardinality**, these categorical variables are **not used directly** in modeling.
+* Origin, Dest, UniqueCarrier
 
----
+Instead, **Bayesian-smoothed reliability encodings** are applied:
 
-### 📈 Reliability Encodings (Derived Features)
+* CarrierReliability
+* OriginReliability
+* DestReliability
 
-To handle high-cardinality categorical variables, **Bayesian-smoothed reliability encodings** were computed and stored as CSV files:
-
-- `CarrierReliability`
-- `OriginReliability`
-- `DestReliability`
-
-These represent historical **On-Time performance rates**, smoothed to avoid bias from rare observations.
+These represent historical **On-Time performance rates**, smoothed to reduce bias.
 
 ---
 
 ### 🌅 Time-of-Day Encoding
 
-Raw clock times were converted into operational regimes:
-
-| Encoding | Time Period |
-|--------|------------|
-| 0 | Morning (05–11) |
-| 1 | Afternoon (11–17) |
-| 2 | Evening (17–22) |
-| 3 | Night (22–05) |
+| Code | Period            |
+| ---- | ----------------- |
+| 0    | Morning (05–11)   |
+| 1    | Afternoon (11–17) |
+| 2    | Evening (17–22)   |
+| 3    | Night (22–05)     |
 
 Features:
-- `DepTimeOfDay_enc`
-- `ArrTimeOfDay_enc`
 
-This encoding captures congestion and operational shifts better than raw hours.
-
----
-
-### 🧹 Features Removed During Preprocessing
-
-To prevent **data leakage**, reduce noise, and ensure inference-time availability, the following features were removed:
-
-#### 🚫 Post-Event / Leakage Features
-- `ArrDelay`
-- `DepDelay`
-- `CarrierDelay`
-- `WeatherDelay`
-- `NASDelay`
-- `SecurityDelay`
-- `LateAircraftDelay`
-- `ActualElapsedTime`
-- `AirTime`
-- `TaxiIn`
-- `TaxiOut`
-
-#### 🚫 High-Cardinality Identifiers
-- `FlightNum`
-- `TailNum`
-
-#### 🚫 Redundant or Replaced Features
-- Raw `CRSDepTime`, `CRSArrTime` (replaced by minute-based formats)
-- Raw `Origin`, `Dest`, `UniqueCarrier` (replaced by reliability encodings)
-
-#### 🚫 Low-Information Columns
-- `CancellationCode`
-- Intermediate EDA-only features
+* DepTimeOfDay_enc
+* ArrTimeOfDay_enc
 
 ---
 
-### ⚠️ Key Challenges in the Data
+### 🧹 Features Removed (Leakage Prevention)
 
-- Extreme class imbalance  
-- Strong overlap between **On Time** and **Delayed**  
-- Rare but operationally critical **Diverted** events  
-- High-cardinality categorical variables  
-- Temporal dependency and delay propagation  
+**Post-event / leakage:**
+ArrDelay, DepDelay, WeatherDelay, NASDelay, TaxiIn/Out, AirTime, ActualElapsedTime, etc.
 
----
+**Identifiers:**
+FlightNum, TailNum
 
-## 🔬 Models Tried
-
-### 1. Direct Multiclass Classification ❌
-
-Models evaluated:
-- Random Forest
-- XGBoost
-- LightGBM
-- CatBoost
-
-**Issues Observed:**
-- Accuracy plateaued at ~30–55% on balanced data  
-- Severe confusion between *On Time*, *Delayed*, and *Cancelled*  
-- Diverted class either ignored or overfit  
-
-**Conclusion:** Flat multiclass modeling does not respect the hierarchical nature of flight disruptions.
+**Redundant:**
+Raw CRS times, raw categorical IDs
 
 ---
 
-## 🧩 APPROACH 1: 4-Stage Binary Pipeline + Hard Labeling + Meta Classifier
+## ⚠️ Key Data Challenges
 
-This architecture decomposes the problem into **simpler, interpretable binary decisions**, then recombines them intelligently.
-
-### 🔹 Stage 1 – Binary Base Models (Random Forest)
-
-Four binary classifiers were trained, each targeting a **specific operational boundary**:
-
-1. **Diverted vs Others**  
-   Chosen because diverted flights showed strong separability from other outcomes.
-
-2. **On Time vs Delayed**  
-   Chosen due to heavy feature overlap observed in multiclass classifiers.
-
-3. **Delayed vs Cancelled**  
-   Helps distinguish recoverable delays from true cancellations.
-
-4. **On Time vs Cancelled**  
-   Captures edge cases where cancellations occur without long delays.
-
-Each model outputs **both probabilities and hard labels**.
+* Extreme class imbalance
+* Strong On-Time vs Delayed overlap
+* Rare but critical Diverted events
+* High-cardinality categorical features
+* Temporal dependency & delay propagation
 
 ---
 
-### 🔹 Hard Labeling Logic (Intermediate Decision Layer)
+## ❌ Direct Multiclass Modeling (Baseline)
 
-Before aggregation, **hard predictions** are evaluated:
+Models tested:
 
-- If **Diverted vs Others** predicts *Diverted*, the flight is immediately labeled **Diverted**
-- Otherwise, hard labels from the remaining three models are compared
-- The class with **majority support** becomes the provisional outcome
+* Random Forest
+* XGBoost
+* LightGBM
+* CatBoost
 
-This step:
-- Improves recall for rare events  
-- Reduces ambiguity in high-confidence cases  
-- Mimics real-world operational decision logic  
+**Observed failures:**
 
-**Metrics:**
-- Train Accuracy: **71–72%**
-- Test Accuracy: **~70%**
+* Accuracy capped at **30–55%** (balanced data)
+* Severe confusion between On Time / Delayed / Cancelled
+* Diverted either ignored or overfit
 
----
+➡️ **Conclusion:** Flat multiclass modeling fails to capture disruption hierarchy.
 
-### 🔹 Stage 2 – Meta Classifier (Extra Trees)
-
-The **probability outputs** of the four binary models are used as meta-features:
-A **meta-classifier (Extra Trees)** learns how to:
-- Resolve conflicts between binary predictions
-- Weight model outputs by reliability
-- Produce a stable final class prediction
-
-This removes the need for:
-- Hard thresholds
-- Manual rule tuning
-- Brittle if–else logic
+![Multiclass Failure](https://github.com/user-attachments/assets/7c8c95e7-4af0-4471-afbc-244af585e6ce)
 
 ---
 
-## 📊 Final Output
+## 🧩 APPROACH 1 — 4-Stage Binary Pipeline + Meta Classifier
 
-For each flight, the system produces:
-- Final predicted disruption type  
-- Probability score for each class  
-- Confidence score (maximum probability)  
+### 🔹 Stage 1: Binary Base Models (Random Forest)
 
----
+| Binary Task          | Accuracy | Purpose                        |
+| -------------------- | -------- | ------------------------------ |
+| Diverted vs Others   | 86%      | Early capture of rare events   |
+| On Time vs Delayed   | 60%      | Resolve heavy overlap          |
+| Delayed vs Cancelled | 74%      | Distinguish recoverable delays |
+| On Time vs Cancelled | 74%      | Edge-case separation           |
 
-## ✅ Final Performance
-
-- **Train Accuracy:** ~72%  
-- **Test Accuracy:** ~74%  
-- **ROC-AUC (Test):** Improved significantly over direct multiclass models  
-- Stable full-coverage predictions on unseen data  
+Each model outputs **probabilities + hard labels**.
 
 ---
 
-## 🚀 Key Advantages
+### 🔹 Hard Labeling Logic
 
-- Reflects real-world disruption hierarchy  
-- Strong rare-class detection  
-- Interpretable decision flow  
-- Memory-safe inference (models loaded one-by-one)  
-- Easily extensible with new binary models  
+Decision rules:
+
+* If *Diverted* → immediately classify
+* Else, majority vote from remaining binaries
+
+**Benefits:**
+
+* Boosts rare-class recall
+* Reduces ambiguity
+* Mirrors real-world operational logic
+
+**Accuracy:** ~70%
+
+![Hard Labeling](https://github.com/user-attachments/assets/f2c2d329-512c-4741-a006-59dddd6ba7f2)
 
 ---
 
-## 🏁 Final Verdict
+### 🔹 Stage 2: Meta Classifier (Extra Trees)
 
-The **4-stage binary pipeline with hard labeling and a meta-classifier** emerged as the most **accurate, stable, and deployable** solution, outperforming all direct multiclass and naive ensemble approaches tried during the project.
+Meta-features = **probabilities from all binary models**.
+
+Learns to:
+
+* Resolve conflicts
+* Weight model reliability
+* Produce stable final prediction
+
+Removes brittle thresholds & manual rules.
+
+---
+
+## 📈 Final Output (Approach 1)
+
+For each flight:
+
+* Final disruption label
+* Class-wise probabilities
+* Confidence score
+
+**Performance:**
+
+* Train Accuracy: ~72%
+* Test Accuracy: ~74%
+
+![Meta Results](https://github.com/user-attachments/assets/74a38b62-0bd4-4c45-b942-53d9cae9aad2)
+![Confusion](https://github.com/user-attachments/assets/214693de-3f0f-4852-9395-eda808904cc5)
+
+---
+
+## 🚀 APPROACH 2 — OvR Ensemble with Probabilistic Coupling
+
+### 🧠 Why OvR?
+
+* Independent learning per disruption type
+* Class-specific imbalance handling
+* Interpretable decision boundaries
+
+---
+
+### 🌳 Base OvR Models (Tree Ensembles)
+
+Each model predicts **P(class vs rest)** using Extra Trees Classifier
+
+---
+
+### 📊 OvR Model Performance
+
+**Diverted vs Rest:** ROC-AUC ≈ 1.00
+**Cancelled vs Rest:** ROC-AUC ≈ 0.92
+**Delayed / On-Time vs Rest:** ROC-AUC ≈ 0.77
+
+---
+
+### 🔄 Probability Coupling (Softmax)
+
+```
+P(classᵢ) = exp(scoreᵢ) / Σ exp(scoreⱼ)
+```
+
+Ensures:
+
+* Comparable probabilities
+* Sum-to-one constraint
+* Valid probabilistic metrics
+
+---
+
+### 🏁 Final Prediction
+
+```
+argmax(P(Cancelled), P(Diverted), P(Delayed), P(On Time))
+```
+
+**Accuracy:** 70%
+
+---
+
+## ⚠️ Risk Scoring
+
+```
+Risk Score = 1 − P(On Time)
+```
+
+Enables:
+
+* Risk ranking
+* Threshold-free prioritization
+* Operational planning
+
+---
+
+## 📊 Final Evaluation (OvR)
+
+| Class     | Precision | Recall | F1   |
+| --------- | --------- | ------ | ---- |
+| Cancelled | 0.90      | 0.65   | 0.76 |
+| Diverted  | 0.99      | 1.00   | 1.00 |
+| Delayed   | 0.49      | 0.58   | 0.54 |
+| On Time   | 0.50      | 0.55   | 0.52 |
+
+<img width="601" height="470" alt="image" src="https://github.com/user-attachments/assets/26a54fe4-5b8b-4394-9497-ad42d5e8e18c" />
+
+
+* **Accuracy:** 69%
+* **Macro / Weighted ROC-AUC:** 0.88
+  <img width="790" height="590" alt="image" src="https://github.com/user-attachments/assets/5959dffc-d11e-456b-b21b-682fd0e70b00" />
+  <img width="790" height="590" alt="image" src="https://github.com/user-attachments/assets/83d8886e-948d-462d-8022-880527769f16" />
 
 
 
+---
+
+## 🧩 Memory-Safe Inference
+
+Designed for **low-memory environments**:
+
+* Load one model at a time
+* Predict & release immediately
+* Streamlit-safe deployment
+
+---
+
+## ✅ Final Takeaways
+
+✔ Reflects real-world disruption hierarchy
+✔ Strong rare-event detection
+✔ Transparent decision flow
+✔ Robust & extensible system
+
+**AeroRisk** prioritizes **correctness, interpretability, and deployability** — making it suitable for real-world airline operations.
