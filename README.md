@@ -456,5 +456,7 @@ AeroRisk is not a typical *train-a-model-and-predict* project. It reflects **rea
 - **Real-Time Decision Support Systems**
   - Integrate as a risk-scoring API for operational dashboards
 
-**AeroRisk** prioritizes **correctness, interpretability, and deployability** — making it suitable for real-world airline operations.
+## **🧠👨‍🍳HOW TO USE THIS REPO**
+##  ⬇️Download Model , Encodings and Data from this google drive link - https://drive.google.com/drive/folders/13fkVWHuUqbSoB4DC0gRpTJyMG8NZTYUR?usp=drive_link
+
 
