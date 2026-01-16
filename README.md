@@ -31,6 +31,8 @@ These approaches are **interpretable, robust, and deployment-ready**.
 ## 📊 Dataset Overview
 
 Large-scale historical **U.S. airline operations data**, capturing temporal, operational, route-level, and carrier-level signals influencing disruptions.
+The dataset is taken from kaggle follow this link to find data -
+https://www.kaggle.com/datasets/bulter22/airline-data
 
 ### 📁 Data Scope
 
@@ -459,6 +461,7 @@ AeroRisk is not a typical *train-a-model-and-predict* project. It reflects **rea
 ## **🧠👨‍🍳HOW TO USE THIS REPO**
 ##  ⬇️Download Model , Encodings and Data from this google drive link because of uploadation size issues
 - https://drive.google.com/drive/folders/1OHa2DibO5WJtq-G_UaqDgOo1DN-0eILO?usp=sharing
+
 
 
 
