@@ -327,6 +327,14 @@ Enables:
 
 ---
 
+
+
+
+## 🌟 Distinguishing Features
+
+AeroRisk is not a typical *train-a-model-and-predict* project. It reflects **real-world ML system design**, shaped by constraints, failures, and operational needs.
+
+---
 ## 🧩 Memory-Safe Inference
 
 Designed for **low-memory environments**:
@@ -334,13 +342,6 @@ Designed for **low-memory environments**:
 * Load one model at a time
 * Predict & release immediately
 * Streamlit-safe deployment
-
----
-
-
-## 🌟 Distinguishing Features
-
-AeroRisk is not a typical *train-a-model-and-predict* project. It reflects **real-world ML system design**, shaped by constraints, failures, and operational needs.
 
 ---
 
@@ -463,6 +464,7 @@ AeroRisk is not a typical *train-a-model-and-predict* project. It reflects **rea
 - https://drive.google.com/drive/folders/1OHa2DibO5WJtq-G_UaqDgOo1DN-0eILO?usp=sharing
 
 ## verify paths before using the models
+
 
 
 
