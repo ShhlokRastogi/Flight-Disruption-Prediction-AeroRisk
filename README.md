@@ -462,6 +462,7 @@ AeroRisk is not a typical *train-a-model-and-predict* project. It reflects **rea
 ##  ⬇️Download Model , Encodings and Data from this google drive link because of uploadation size issues
 - https://drive.google.com/drive/folders/1OHa2DibO5WJtq-G_UaqDgOo1DN-0eILO?usp=sharing
 
+## verify paths before using the models
 
 
 
