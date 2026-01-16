@@ -480,7 +480,9 @@ Designed for **low-memory environments**:
    - Step 3: write "streamlit run app.py"
    - This will open this interface on your browser as a local host
    - Choose model and get your prediction
-     <img width="1877" height="746" alt="image" src="https://github.com/user-attachments/assets/ab363773-587e-438f-a427-642ac2d1c58f" />
+   - <img width="1917" height="902" alt="image" src="https://github.com/user-attachments/assets/71ed491e-1f37-4743-ad94-e793170ab1b1" />
+
+
 
 
 
