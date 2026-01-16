@@ -459,11 +459,27 @@ Designed for **low-memory environments**:
 - **Real-Time Decision Support Systems**
   - Integrate as a risk-scoring API for operational dashboards
 
-## **🧠👨‍🍳HOW TO USE THIS REPO**
 ##  ⬇️Download Model , Encodings and Data from this google drive link because of uploadation size issues
 - https://drive.google.com/drive/folders/1OHa2DibO5WJtq-G_UaqDgOo1DN-0eILO?usp=sharing
 
-## verify paths before using the models
+## ⚙️File structure
+- Original file structure is retained in the google drive link
+- verify paths before using the models
+
+## How to use the inference (locally)
+- Option 1
+  ## 📁run folder contains two files
+  - Approach 1 (4 stage model + meta classifier)
+  - Approach 2 (one vs rest + softmax + argmax)
+
+ - Option 2
+   ## 🗃️using app.py
+   - Step 1: Open terminal write streamlit run app.py
+   - Step 2:
+   - Step 3: 
+
+
+
 
 
 
