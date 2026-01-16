@@ -466,17 +466,23 @@ Designed for **low-memory environments**:
 - Original file structure is retained in the google drive link
 - verify paths before using the models
 
-## How to use the inference (locally)
-- Option 1
-  ## 📁run folder contains two files
-  - Approach 1 (4 stage model + meta classifier)
-  - Approach 2 (one vs rest + softmax + argmax)
+## How to use the inference ( both work locally)
+  ## Option 1: 📁run folder contains two files
+  - Verify paths 
+  - Approach 1 : file 1 (4 stage model + meta classifier)
+  - Approach 2 : file 2 (one vs rest + softmax + argmax)
+  - Just run them
+  - Verify that the the carrier , origin and destination airports you enter as an input are from the ones in the encodings file
+    
+  ## Option 2:🗃️using app.py
+   - Step 1: Verify paths
+   - Step 2: Open terminal 
+   - Step 3: write "streamlit run app.py"
+   - This will open this interface on your browser as a local host
+   - Choose model and get your prediction
+     <img width="1877" height="746" alt="image" src="https://github.com/user-attachments/assets/ab363773-587e-438f-a427-642ac2d1c58f" />
 
- - Option 2
-   ## 🗃️using app.py
-   - Step 1: Open terminal write streamlit run app.py
-   - Step 2:
-   - Step 3: 
+
 
 
 
