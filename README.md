@@ -457,6 +457,8 @@ AeroRisk is not a typical *train-a-model-and-predict* project. It reflects **rea
   - Integrate as a risk-scoring API for operational dashboards
 
 ## **🧠👨‍🍳HOW TO USE THIS REPO**
-##  ⬇️Download Model , Encodings and Data from this google drive link - https://drive.google.com/drive/folders/13fkVWHuUqbSoB4DC0gRpTJyMG8NZTYUR?usp=drive_link
+##  ⬇️Download Model , Encodings and Data from this google drive link because of uploadation size issues
+- https://drive.google.com/drive/folders/1OHa2DibO5WJtq-G_UaqDgOo1DN-0eILO?usp=sharing
+
 
 
