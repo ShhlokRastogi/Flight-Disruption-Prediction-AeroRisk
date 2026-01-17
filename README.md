@@ -462,10 +462,6 @@ Designed for **low-memory environments**:
 ##  ⬇️Download Model , Encodings and Data from this google drive link because of uploadation size issues
 - https://drive.google.com/drive/folders/1OHa2DibO5WJtq-G_UaqDgOo1DN-0eILO?usp=sharing
 
-## ⚙️File structure
-- Original file structure is retained in the google drive link
-- verify paths before using the models
-
 ## How to use the inference ( both work locally)
   ## Option 1: 📁run folder contains two files
   - Verify paths 
@@ -480,7 +476,47 @@ Designed for **low-memory environments**:
    - Step 3: write "streamlit run app.py"
    - This will open this interface on your browser as a local host
    - Choose model and get your prediction
-   - <img width="1917" height="902" alt="image" src="https://github.com/user-attachments/assets/71ed491e-1f37-4743-ad94-e793170ab1b1" />
+<img width="1917" height="902" alt="image" src="https://github.com/user-attachments/assets/71ed491e-1f37-4743-ad94-e793170ab1b1" />
+
+# ⚙️Project File & Folder Structure
+- Original file structure is retained in the google drive link
+- verify paths before using the models
+
+## Root Directory
+- `encodings/`
+- `models/` — *contains all the models*
+- `run/` — *To run the file locally on computer without streamlit*
+- `src/` — *Data Preprocessing and feature extraction*
+- `train_test/`
+- `app.py` — *Streamlit local host app*
+- `downloaddata.ipynb` — *To download data using code*
+- `README.md`
+- `requirement.txt`
+
+## encodings/
+- `carrier_reliability_encoding.csv`
+- `dest_reliability_encoding.csv`
+- `gen_enco.ipynb` — *Encodings creation file*
+- `origin_reliability_encoding.csv`
+
+## models/
+- `class_4stage_models/`
+- `meta_classifier/`
+- `OneVRest_models/`
+
+## run/
+- `inference_approach_1.ipynb` — *Inference file 2 stage +  meta-classifier model*
+- `inference_approach_2.ipynb` — *Inference file of One-vs-Rest model*
+
+## src/
+- `Balanced_flight_data1.csv`
+- `classDataC.ipynb`
+- `Flight_classification_data.csv` — *Final preprocessed data*
+
+## train_test/
+- `onevsrest.ipynb` — *Training and evaluation of One-vs-Rest model*
+- `train_class_4.ipynb` — *Training and evaluation of 2 stage + meta-classifier / hard voting model*
+
 
 
 
